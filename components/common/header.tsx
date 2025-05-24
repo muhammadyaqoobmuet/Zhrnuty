@@ -1,12 +1,15 @@
 import { FileType2Icon } from "lucide-react";
 import React from "react";
 import NavLink from "./nav-link";
+import BgGradient from "./bg-gradient";
 
 const Header = () => {
   const iSLoggedIn = false; // Replace with actual authentication logic
 
   return (
-    <nav className="container flex items-center justify-between py-4 lg:py-8 px-2 mx-auto">
+    <nav className="container bg-transparent  relative flex items-center justify-between py-4 lg:py-8 px-2 mx-auto">
+      {/* Logo */}
+     
       <div className="flex lg:flex-1 ">
         <NavLink
           href="/"
