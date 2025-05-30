@@ -10,12 +10,18 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.20.0",
+    "@google/genai": "^1.1.0",
+    "@google/generative-ai": "^0.24.1",
     "@langchain/community": "^0.3.45",
     "@langchain/core": "^0.3.57",
+    "@neondatabase/serverless": "^1.0.0",
+    "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-slot": "^1.2.3",
+    "@types/uuid": "^10.0.0",
     "@uploadthing/react": "^7.3.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.511.0",
     "next": "15.3.2",
     "next-themes": "^0.4.6",
@@ -27,6 +33,7 @@
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-typography": "^3.1.0",
     "uploadthing": "^7.7.2",
+    "uuid": "^11.1.0",
     "zod": "^3.25.30"
   },
   "devDependencies": {
