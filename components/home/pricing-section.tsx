@@ -22,16 +22,16 @@ const plans: Plan[] = [
     price: "$0",
     badge: "Most Popular",
     note: "Perfect for individuals",
-    items: ["30 summaries per month", "1 PDF at a time", "Basic support"],
+    items: ["5 summaries ", "1 PDF at a time", "Basic support"],
   },
   {
     id: "basic",
     name: "Basic",
     description: "🚀 Best for growing teams",
     price: "$7/month",
-    badge: "Best Value",
+    badge: "🚀 Best Value",
     note: "Just 23¢ a day – less than a coffee ☕",
-    items: ["100 summaries per month", "5 PDFs at a time", "Priority support"],
+    items: ["400 summaries ", "5 PDFs at a time", "Priority support"],
   },
   {
     id: "pro",
@@ -49,20 +49,31 @@ const PricingSection = () => {
     <section id="pricing" className="bg-gradient-to-b from-white to-gray-50">
       <div className="py-12 lg:py-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 lg:pt-12">
         <div className="text-center mb-12">
+          <div className="flex justify-center mb-4">
+            <div className="flex items-center space-x-2 bg-gradient-to-r from-rose-100 to-blue-100 px-4 py-2 rounded-full">
+              <Sparkles className="h-5 w-5 text-rose-500" />
+              <span className="text-sm font-medium text-gray-700">
+                Transparent Pricing
+              </span>
+            </div>
+          </div>
+
           <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            Simple,{" "}
+            Simple pricing,{" "}
             <span className="relative inline-block">
-              <span className="relative z-10 px-2">transparent</span>
+              <span className="relative z-10 bg-gradient-to-r from-rose-600 to-blue-600 bg-clip-text text-transparent">
+                powerful results
+              </span>
               <span
                 aria-hidden="true"
-                className="absolute inset-0 bg-rose-200/50 -rotate-1 rounded-lg transform -skew-y-1"
+                className="absolute inset-0 bg-gradient-to-r from-rose-200/40 to-blue-200/40 -rotate-1 rounded-lg transform -skew-y-1"
               ></span>
-            </span>{" "}
-            pricing
+            </span>
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Choose the perfect plan for your needs. All plans include our core
-            PDF summarization technology.
+            Choose the perfect plan for your needs. All plans include our
+            advanced PDF summarization technology with enterprise-grade
+            security.
           </p>
         </div>
 
@@ -91,16 +102,21 @@ const PricingSection = () => {
 
 const PlanCard = ({ plan }: { plan: Plan }) => {
   const isPopular =
-    plan.badge === "Most Popular" || plan.badge === "Best Value";
+    plan.badge === "Most Popular" || plan.badge === "🚀 Best Value";
+  const isBestValue = plan.badge === "🚀 Best Value";
 
   return (
     <div
       className={`relative flex flex-col h-full p-6 ${
         isPopular
-          ? "bg-white border-rose-200 shadow-lg shadow-rose-100/30"
-          : "bg-white border-gray-200 shadow-md"
+          ? "bg-white border-rose-100 shadow-lg shadow-rose-100/30"
+          : "bg-white border-gray-300 shadow-md"
       } border-2 rounded-xl hover:shadow-xl transition-all duration-300 ease-in-out ${
-        isPopular ? "transform hover:-translate-y-1" : ""
+        isBestValue
+          ? "transform lg:scale-105 hover:-translate-y-1 border-rose-300"
+          : isPopular
+          ? "transform hover:-translate-y-1"
+          : ""
       }`}
     >
       {plan.badge && (
@@ -109,9 +125,9 @@ const PlanCard = ({ plan }: { plan: Plan }) => {
             variant={"secondary"}
             className={`px-3 py-1 text-xs font-medium ${
               plan.badge === "Most Popular"
-                ? "bg-rose-100 text-rose-700"
-                : plan.badge === "Best Value"
-                ? "bg-blue-100 text-blue-700"
+                ? "bg-rose-100 text-red-400"
+                : plan.badge === "🚀 Best Value"
+                ? "bg-rose-200 text-rose-900"
                 : "bg-purple-100 text-purple-700"
             } rounded-full`}
           >
@@ -147,16 +163,16 @@ const PlanCard = ({ plan }: { plan: Plan }) => {
       </ul>
 
       <button
-        disabled={plan.id === "basic" || plan.id === "pro"}
+        disabled={plan.id === "pro"}
         className={`mt-8 w-full py-3 rounded-full font-medium transition-colors duration-300 ${
-          plan.id === "basic" || plan.id === "pro"
+          plan.id === "pro"
             ? "bg-gray-200 text-gray-500 cursor-not-allowed"
             : "bg-gradient-to-r from-slate-900 to-rose-500 hover:from-rose-500 hover:to-slate-900 text-white shadow-md hover:shadow-lg"
         }`}
       >
         {plan.id === "free"
           ? "Start Free"
-          : plan.id === "basic" || plan.id === "pro"
+          : plan.id === "pro"
           ? "Coming Soon"
           : "Choose Plan"}
       </button>
