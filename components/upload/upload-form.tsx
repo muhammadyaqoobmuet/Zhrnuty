@@ -1,8 +1,16 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import UploadFormInput from "./upload-form-input";
 import { z } from "zod";
 import { useUploadThing } from "@/utils/uploadthing";
+import { toast } from "sonner";
+import { Sparkles } from "lucide-react";
+import {
+  genratePdfSummary,
+  storePdfSummaryAction,
+} from "@/actions/upload-actions";
+import { generateSummaryFromGeminiApi } from "@/lib/gemni";
+import { useRouter } from "next/navigation";
 
 const fileScheme = z.object({
   file: z
@@ -18,19 +26,34 @@ const fileScheme = z.object({
 });
 
 const UploadForm = () => {
+  const [resp, setResp] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   const { startUpload } = useUploadThing("pdfUploader", {
     onClientUploadComplete: (res) => {
       console.log("File uploaded successfully!", res);
+      toast.success("File uploaded successfully!", {
+        description:
+          " file has been uploaded to server wait for transformation",
+      });
     },
     onUploadError: (error) => {
       console.error("Upload error:", error);
-      alert(`Upload failed: ${error.message}`);
+      toast.error(`Upload failed: ${error.message}`);
     },
     onUploadBegin: (name) => {
       console.log("Upload begin:", name);
+      toast(`Starting upload for ${name}...`, {
+        duration: 2000,
+        icon: <Sparkles className="h-4 w-4" />,
+      });
     },
     onUploadProgress: (progress) => {
       console.log("📊 Upload progress:", progress);
+      toast(`Upload progress: ${progress}%`, {
+        duration: 2000,
+        icon: <Sparkles className="h-4 w-4 text-red-700" />,
+      });
     },
   });
 
@@ -61,20 +84,87 @@ const UploadForm = () => {
 
     // start upload
     try {
-      const resp = await startUpload([file]);
-      console.log("Upload response:", resp);
+      setIsLoading(true);
+      const resp: any = await startUpload([file]);
+
+   
 
       if (resp && resp.length > 0) {
         console.log("Upload successful!");
       }
+
+      const response = await genratePdfSummary(resp);
+      // get whole text back
+
+      
+
+      if (response.data?.summary) {
+        let storeResults: any;
+        toast("finished reading pdf  ", {
+          duration: 2000,
+        });
+        // storing pdf summaries
+        storeResults = await storePdfSummaryAction({
+          summary: response.data?.summary as string,
+          fileUrl: resp[0].serverData.fileUrl,
+          title: response.data.title,
+          fileName: file.name,
+        });
+        console.log(storeResults);
+
+        if (!storeResults) {
+          toast.error("failed to saved pdf in database  ", {
+            duration: 2000,
+          });
+        }
+        toast.success("Summary Saved!🎉 ", {
+          duration: 2000,
+        });
+
+        // redirect user
+        router.push(`/summaries/${storeResults?.data?.id}`);
+      }
+
+      if (!response.data?.summary) {
+        toast.error("unable to reading pdf", { duration: 2000 });
+        return;
+      }
+
+      setResp("genrated summary move to ai now in code");
+
+      // const responseFromAi = await generateSummaryFromGeminiApi(
+      //   response.data?.summary
+      // );
+      // toast.success("saving pdf ", {
+      //   duration: 2000,
+      // });
+      // setResp(responseFromAi);
+      // // we get this shit
+      // console.log("response from ai", responseFromAi);
+      // if (!responseFromAi) {
+      //   toast.error("unable to saving pdf ", {
+      //     duration: 2000,
+      //   });
+      // }
+
+      setIsLoading(false);
     } catch (error) {
       console.error("Upload failed:", error);
+      setIsLoading(false);
+      toast.error(
+        `Upload failed: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="flex flex-col  w-full max-w-2xl mx-auto  gap-8">
-      <UploadFormInput onSubmit={handleSubmit} />
+      <UploadFormInput isLoading={isLoading} onSubmit={handleSubmit} />
+      <p>{isLoading ? "loading you summary" : resp}</p>
     </div>
   );
 };
