@@ -4,14 +4,15 @@ import { Input } from "@/components/ui/input";
 
 const UploadFormInput = ({
   onSubmit,
+  isLoading,
 }: {
   onSubmit: (event: React.FormEvent) => void;
+  isLoading: boolean;
 }) => {
   return (
     <div>
       <form className="flex flex-col" action="" onSubmit={onSubmit}>
         <div className="flex justify-end items-center gap-1.5 ">
-         
           <Input
             id="file"
             type="file"
@@ -20,7 +21,9 @@ const UploadFormInput = ({
             placeholder="upload your pdf"
             className=""
           />
-          <Button type="submit">Upload</Button>
+          <Button disabled={isLoading} type="submit">
+            {isLoading ? "Uploading..." : "Upload"}
+          </Button>
         </div>
       </form>
     </div>
