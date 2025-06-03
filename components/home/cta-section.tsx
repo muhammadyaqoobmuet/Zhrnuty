@@ -21,7 +21,7 @@ const CtaSection = () => {
         <div className="flex flex-col items-center justify-center mt-4">
           <Button
             variant={"link"}
-            className="  w-full min-[400px]:w-auto bg-linear-to-r from-rose-500 to-rose-700 hover:from-rose-600 hover:to-rose-800 hover:no-underline text-white font-bold px-6 hover:scale-105 py-4 rounded-xl flex items-center justify-center transition-all duration-200 ease-in-out"
+            className="  w-full min-[400px]:w-auto bg-linear-to-r from-rose-500 to-rose-700 hover:from-rose-600 hover:to-rose-800 hover:no-underline text-white font-bold px-8 hover:scale-105 py-6 rounded-lg flex items-center justify-center transition-all duration-200 ease-in-out"
           >
             <Link
               className="flex justify-center text-lg font-semibold items-center w-full h-full"
