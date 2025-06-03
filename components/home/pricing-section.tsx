@@ -2,6 +2,18 @@ import React from "react";
 import { Badge } from "../ui/badge";
 import { Check, Star, Sparkles } from "lucide-react";
 import Link from "next/link";
+import {
+  MotionDiv,
+  MotionH2,
+  MotionPara,
+  MotionSection,
+} from "../common/moiton-wrapper";
+import {
+  containerVariants,
+  itemVariants,
+  listVariants,
+} from "@/utils/constants";
+import PricingButton from "../common/button";
 
 type Plan = {
   id: string;
@@ -22,7 +34,7 @@ const plans: Plan[] = [
     price: "$0",
     badge: "Most Popular",
     note: "Perfect for individuals",
-    items: ["5 summaries ", "1 PDF at a time", "Basic support"],
+    items: ["limited summaries ", "1 PDF at a time", "Basic support"],
   },
   {
     id: "basic",
@@ -46,19 +58,39 @@ const plans: Plan[] = [
 
 const PricingSection = () => {
   return (
-    <section id="pricing" className="bg-gradient-to-b from-white to-gray-50">
-      <div className="py-12 lg:py-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 lg:pt-12">
+    <MotionSection
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-100px" }}
+      id="pricing"
+      className="bg-gradient-to-b from-white to-gray-50"
+    >
+      <MotionDiv
+        variants={itemVariants}
+        className="py-12 lg:py-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 lg:pt-12"
+      >
         <div className="text-center mb-12">
-          <div className="flex justify-center mb-4">
+          <MotionDiv
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex justify-center mb-4"
+          >
             <div className="flex items-center space-x-2 bg-gradient-to-r from-rose-100 to-blue-100 px-4 py-2 rounded-full">
               <Sparkles className="h-5 w-5 text-rose-500" />
               <span className="text-sm font-medium text-gray-700">
                 Transparent Pricing
               </span>
             </div>
-          </div>
+          </MotionDiv>
 
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+          <MotionH2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4"
+          >
             Simple pricing,{" "}
             <span className="relative inline-block">
               <span className="relative z-10 bg-gradient-to-r from-rose-600 to-blue-600 bg-clip-text text-transparent">
@@ -69,12 +101,12 @@ const PricingSection = () => {
                 className="absolute inset-0 bg-gradient-to-r from-rose-200/40 to-blue-200/40 -rotate-1 rounded-lg transform -skew-y-1"
               ></span>
             </span>
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          </MotionH2>
+          <MotionPara className="text-lg text-gray-600 max-w-2xl mx-auto">
             Choose the perfect plan for your needs. All plans include our
             advanced PDF summarization technology with enterprise-grade
             security.
-          </p>
+          </MotionPara>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
@@ -87,7 +119,7 @@ const PricingSection = () => {
           <p className="text-sm text-gray-500">
             All plans include a 14-day satisfaction guarantee. Questions?{" "}
             <Link
-              href="/contact"
+              href="htts://www.github.com/muhammadyaqoobmuet"
               className="text-rose-600 hover:text-rose-800 font-medium"
             >
               Contact us
@@ -95,8 +127,8 @@ const PricingSection = () => {
             .
           </p>
         </div>
-      </div>
-    </section>
+      </MotionDiv>
+    </MotionSection>
   );
 };
 
@@ -105,8 +137,16 @@ const PlanCard = ({ plan }: { plan: Plan }) => {
     plan.badge === "Most Popular" || plan.badge === "🚀 Best Value";
   const isBestValue = plan.badge === "🚀 Best Value";
 
+  function handleClick(
+    id: string
+  ): React.MouseEventHandler<HTMLButtonElement> | undefined {
+    alert(id);
+    return;
+  }
+
   return (
-    <div
+    <MotionDiv
+      variants={listVariants}
       className={`relative flex flex-col h-full p-6 ${
         isPopular
           ? "bg-white border-rose-100 shadow-lg shadow-rose-100/30"
@@ -162,10 +202,11 @@ const PlanCard = ({ plan }: { plan: Plan }) => {
         ))}
       </ul>
 
-      <button
-        disabled={plan.id === "pro"}
+      {/* <PricingButton plan={plan} />Transparent Pricing */}
+      {/* <button
+        disabled={plan.id === "pro" || plan.id == "basic"}
         className={`mt-8 w-full py-3 rounded-full font-medium transition-colors duration-300 ${
-          plan.id === "pro"
+          plan.id === "pro" || plan.id == "basic"
             ? "bg-gray-200 text-gray-500 cursor-not-allowed"
             : "bg-gradient-to-r from-slate-900 to-rose-500 hover:from-rose-500 hover:to-slate-900 text-white shadow-md hover:shadow-lg"
         }`}
@@ -175,8 +216,9 @@ const PlanCard = ({ plan }: { plan: Plan }) => {
           : plan.id === "pro"
           ? "Coming Soon"
           : "Choose Plan"}
-      </button>
-    </div>
+      </button> */}
+      <PricingButton plan={plan} />
+    </MotionDiv>
   );
 };
 
