@@ -1,7 +1,6 @@
 import BgGradient from "@/components/common/bg-gradient";
 import SourceInfo from "@/components/summaries/source-info";
 import SummaryHeader from "@/components/summaries/summary-header";
-
 import { getSummariesById } from "@/lib/summaries";
 import { FileText } from "lucide-react";
 import { notFound } from "next/navigation";
@@ -9,12 +8,19 @@ import React, { FC } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { SummaryViewer } from "@/components/summaries/summary-viewer";
 import { MotionDiv } from "@/components/common/moiton-wrapper";
-// important for [...summaryId] -> we are catching all routes and they come as a string[]
 
-const Page = async ({ params }: { params: { summaryId: string[] } }) => {
-  const firstSegmentWhichIsIdOfWholeUrl = await params.summaryId[0]; // just the first part like "/summary/this-part"
+// Fix: Update interface for Next.js 15 async params
+interface PageProps {
+  params: Promise<{ summaryId: string[] }>;
+}
+
+const Page = async ({ params }: PageProps) => {
+  // Fix: Await the params Promise
+  const { summaryId } = await params;
+  const firstSegmentWhichIsIdOfWholeUrl = summaryId[0]; // just the first part like "/summary/this-part"
 
   const summary = await getSummariesById(firstSegmentWhichIsIdOfWholeUrl);
+
   if (!summary) {
     return notFound();
   }
@@ -33,6 +39,7 @@ const Page = async ({ params }: { params: { summaryId: string[] } }) => {
     month: "long",
     day: "numeric",
   });
+
   return (
     <div className="relative isolate min-h-[90vh] bg-linear-to-b from-rose-50/20 to-white z-100">
       <BgGradient className="bg-gradient-to-br -z-100 from-emerald-600 to-emerald-800" />
@@ -71,7 +78,6 @@ const Page = async ({ params }: { params: { summaryId: string[] } }) => {
                 <FileText className="h-3 w-3 sm:h-4 sm:w-4 text-rose-400" />
                 {word_count?.toLocaleString()} words
               </div>
-              {/* SummaryViewer is commented out based on the last image */}
               <SummaryViewer summary={summary.summary_text} />
             </div>
           </MotionDiv>
