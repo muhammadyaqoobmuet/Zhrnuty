@@ -5,12 +5,19 @@ import SummaryHeader from "@/components/summaries/summary-header";
 import { getSummariesById } from "@/lib/summaries";
 import { FileText } from "lucide-react";
 import { notFound } from "next/navigation";
-import React from "react";
+import React, { FC } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { SummaryViewer } from "@/components/summaries/summary-viewer";
 import { MotionDiv } from "@/components/common/moiton-wrapper";
 // important for [...summaryId] -> we are catching all routes and they come as a string[]
-const Page = async ({ params }: { params: { summaryId: string[] } }) => {
+
+interface PageProps {
+  params: {
+    summaryId: string[];
+  };
+}
+
+const Page: FC<PageProps> = async ({ params }: PageProps) => {
   const firstSegmentWhichIsIdOfWholeUrl = await params.summaryId[0]; // just the first part like "/summary/this-part"
 
   const summary = await getSummariesById(firstSegmentWhichIsIdOfWholeUrl);
