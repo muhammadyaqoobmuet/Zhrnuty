@@ -9,10 +9,8 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
-// const eslintConfig = [
-//   ...compat.extends("next/core-web-vitals", "next/typescript"),
-// ];
-const eslintConfig = {
+// Fix: Use array spread instead of object spread
+const eslintConfig = [
   ...compat.config({
     extends: [
       'next/core-web-vitals',
@@ -25,6 +23,6 @@ const eslintConfig = {
       'react/no-escape-entities': 'off',
     },
   }),
-};
+];
 
 export default eslintConfig;
