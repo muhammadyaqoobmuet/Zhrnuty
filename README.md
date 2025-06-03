@@ -6,7 +6,7 @@ Here are some screenshots of the Zhrnuty application:
 
 ### Main Interface
 
-[![Zhrnuty Main Interface](https://ik.imagekit.io/x4uskqquc/Screenshot%202025-06-03%20195016.png)]
+![Zhrnuty Main Interface](https://ik.imagekit.io/x4uskqquc/Screenshot%202025-06-03%20195016.png)
 
 This screenshot shows the main interface of the application, highlighting the document upload and summarization process.
 
