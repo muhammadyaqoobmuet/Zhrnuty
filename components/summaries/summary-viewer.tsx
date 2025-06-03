@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { NavigationControls } from "./navigation-controlls";
 import ProgressBar from "./progess-bar";
 import ContentSection from "./content-section";
+import { MotionDiv } from "../common/moiton-wrapper";
 
 // Helper function to parse individual sections of the summary
 const parseSection = (section: string) => {
@@ -79,6 +80,7 @@ const SectionTitle = ({ title }: { title: string }) => {
 };
 
 export function SummaryViewer({ summary }: { summary: string }) {
+  console.log("summary brother" + summary);
   // creating handlers
 
   const handleNext = () =>
@@ -104,7 +106,14 @@ export function SummaryViewer({ summary }: { summary: string }) {
   return (
     <Card className="relative px-2 h-[500px] sm:h-[600px] lg:h-[700px] w-full xl:w-[600px] overflow-hidden bg-linear-to-br from-background via-background/95 to-rose-500/5 backdrop-blur-lg shadow-2xl rounded-3xl border border-rose-500/10">
       <ProgressBar sections={sections} currentSection={currentSection} />
-      <div className="h-full overflow-y-auto scrollbar-hide pt-12 sm:pt-16 sm:pb-24 ">
+      <MotionDiv
+        key={currentSection}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.2, ease: "easeInOut" }}
+        exit={{ opacity: 0 }}
+        className="h-full overflow-y-auto scrollbar-hide pt-12 sm:pt-16 sm:pb-24 "
+      >
         <div className="sm:px-6 px-4 ">
           <SectionTitle title={sections[currentSection].title || ""} />
           <ContentSection
@@ -112,7 +121,7 @@ export function SummaryViewer({ summary }: { summary: string }) {
             title={sections[currentSection].title || ""}
           />
         </div>
-      </div>
+      </MotionDiv>
 
       <NavigationControls
         totalSections={sections.length}
