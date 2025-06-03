@@ -13,8 +13,6 @@ type PricingButtonProps = {
 
 const PricingButton: React.FC<PricingButtonProps> = ({ plan }) => {
   const { isSignedIn } = useAuth();
-  const { signIn } = useSignIn();
-  const { signUp } = useSignUp();
 
   const router = useRouter();
 
@@ -42,9 +40,9 @@ const PricingButton: React.FC<PricingButtonProps> = ({ plan }) => {
   return (
     <button
       onClick={() => handleClick(plan.id)}
-      disabled={plan.id === "pro"}
+      disabled={plan.id === "pro" || plan.id == "basic"}
       className={`mt-8 w-full py-3 rounded-full font-medium transition-colors duration-300 ${
-        plan.id === "pro"
+        plan.id === "pro" || plan.id == "basic"
           ? "bg-gray-200 text-gray-500 cursor-not-allowed"
           : "bg-gradient-to-r from-slate-900 to-rose-500 hover:from-rose-500 hover:to-slate-900 text-white shadow-md hover:shadow-lg"
       }`}
