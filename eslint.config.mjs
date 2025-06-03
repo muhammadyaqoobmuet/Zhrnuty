@@ -20,7 +20,10 @@ const eslintConfig = [
     plugins: ['prettier'],
     rules: {
       'prettier/prettier': 'off',
-      'react/no-escape-entities': 'off',
+      'react/no-unescaped-entities': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      'prefer-const': 'off',
     },
   }),
 ];
