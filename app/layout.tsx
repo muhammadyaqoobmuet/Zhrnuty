@@ -5,6 +5,7 @@ import Header from "@/components/common/header";
 import Footer from "@/components/common/footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
+import { ORIGIN_URL } from "@/utils/helpers";
 
 const fontSans = FontSans({
   variable: "--font-sans",
@@ -16,6 +17,17 @@ export const metadata: Metadata = {
   title: "Zhrnuty – AI-Powered PDF Summarizer ",
   description:
     "Zhrnuty is an advanced AI tool that instantly summarizes PDFs into  concise short notes. Perfect for students, professionals, and researchers who want to save time and boost productivity with smart, accurate summaries.",
+  openGraph: {
+    images: [
+      {
+        url: "/Zhrnuty.png",
+      },
+    ],
+  },
+  metadataBase: new URL(ORIGIN_URL),
+  alternates: {
+    canonical: ORIGIN_URL,
+  },
 };
 
 export default function RootLayout({
@@ -33,7 +45,7 @@ export default function RootLayout({
             <Header />
             <main>
               {children}
-              <Toaster  position="bottom-right" richColors={true} />
+              <Toaster position="bottom-right" richColors={true} />
             </main>
             <Footer />
           </div>
