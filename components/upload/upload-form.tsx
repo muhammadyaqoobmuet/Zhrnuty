@@ -9,7 +9,7 @@ import {
   genratePdfSummary,
   storePdfSummaryAction,
 } from "@/actions/upload-actions";
-import { generateSummaryFromGeminiApi } from "@/lib/gemni";
+
 import { useRouter } from "next/navigation";
 //validation schema
 const fileScheme = z.object({
@@ -101,9 +101,14 @@ const UploadForm = () => {
           description: "converting into short consice format ....",
         });
         // storing pdf summaries by converting them into short with ai
-        const responseFromAi = await generateSummaryFromGeminiApi(
-          response.data?.summary
-        );
+        const apiResponse = await fetch("/api/generate-summary", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pdfText: response.data?.summary }),
+        });
+
+        const apiData = await apiResponse.json();
+        const responseFromAi = apiData.summary;
 
         if (!responseFromAi) {
           toast.error("something went wrong try again!  ", {
