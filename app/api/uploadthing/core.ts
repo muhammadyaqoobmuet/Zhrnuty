@@ -24,17 +24,18 @@ export const ourFileRouter = {
         console.log("✅ Upload Callback Triggered");
         console.log("Metadata:", metadata);
         console.log("File:", file);
-        
+
         if (!metadata?.userId || !file?.url) {
           throw new Error("Missing userId or file URL");
         }
 
         // You can save to database here if needed
-        
+
         return {
           userId: metadata.userId,
           fileUrl: file.ufsUrl, // Use file.ufsUrl instead of file.url
           fileName: file.name,
+          file,
         };
       } catch (error) {
         console.error("Upload callback error:", error);
