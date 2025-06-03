@@ -8,10 +8,11 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import React from "react";
 import NoSummariesState from "@/components/summaries/no-summaries";
+import { MotionDiv } from "@/components/common/moiton-wrapper";
 
 const page = async () => {
   const user = await currentUser();
-  const uploadLimit = 5;
+
 
   if (!user?.id) {
     return redirect("/sign-in");
@@ -22,7 +23,12 @@ const page = async () => {
   return (
     <main className="min-h-screen">
       <BgGradient className="bg-gradient-to-br from-emerald-700 via-teal-400  to-cyan-700 animate-gradient-x" />
-      <div className="container mx-auto flex flex-col gap-4">
+      <MotionDiv
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="container mx-auto flex flex-col gap-4"
+      >
         <div className="px-2 py-12 sm:py-24">
           <div className="flex justify-between items-center gap-4 mb-8">
             <div className="flex flex-col gap-2">
@@ -50,13 +56,12 @@ const page = async () => {
           <div className="mb-6">
             <div className="bg-rose-100 border-rose-200  rounded-lg p-4 text-rose-800">
               <p>
-                You have reached of limit of {uploadLimit} uploads on basic
-                plan.{" "}
+                Response May be slow becuase of Basic Plan.{" "}
                 <Link
                   className="underline underline-offset-4 inline-flex items-center"
                   href="/#pricing"
                 >
-                  Upgrade To Pro{" "}
+                  Upgrade To Pro In Future When Available{" "}
                   <ArrowRight className="w-4 h-4 items-center inline-block" />{" "}
                 </Link>{" "}
                 for unlimited uploads
@@ -70,15 +75,13 @@ const page = async () => {
             {summaries?.length === 0 ? (
               <NoSummariesState />
             ) : (
-              
               summaries?.map((sum, index) => (
                 <SummaryCard key={index} summary={sum} />
-                
               ))
             )}
           </div>
         </div>
-      </div>
+      </MotionDiv>
     </main>
   );
 };
