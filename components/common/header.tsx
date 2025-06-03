@@ -13,7 +13,7 @@ import {
 import { Button } from "../ui/button";
 
 const Header = () => {
-  const iSLoggedIn = false; // Replace with actual authentication logic
+  
 
   return (
     <nav className="container bg-transparent  relative flex items-center justify-between py-4 lg:py-8 px-2 mx-auto">
@@ -47,9 +47,9 @@ const Header = () => {
                 <div className="flex gap-2 items-center">
                   <NavLink
                     href="/upload"
-                    className="bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-300 ease-in-out"
+                    className=" text-black px-4 py-2 rounded-md border-gray-600 border  transition-colors duration-300 ease-in-out"
                   >
-                    Upload
+                    Upload 🙃
                   </NavLink>
                   <SignedIn>
                     <UserButton />
