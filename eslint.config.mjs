@@ -21,7 +21,7 @@ const eslintConfig = {
     ],
     plugins: ['prettier'],
     rules: {
-      'prettier/prettier': 'error',
+      'prettier/prettier': 'off',
       'react/no-escape-entities': 'off',
     },
   }),
