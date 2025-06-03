@@ -164,7 +164,9 @@ const UploadForm = () => {
   return (
     <div className="flex flex-col  w-full max-w-2xl mx-auto  gap-8">
       <UploadFormInput isLoading={isLoading} onSubmit={handleSubmit} />
-      <p>{isLoading ? "loading you summary" : resp}</p>
+      <p className="text-gray-700">
+        {isLoading ? "Brewing something special for you ☕✨" : ""}
+      </p>
     </div>
   );
 };
