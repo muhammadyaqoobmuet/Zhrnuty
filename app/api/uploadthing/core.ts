@@ -19,7 +19,7 @@ export const ourFileRouter = {
       }
       return { userId: user?.id };
     })
-    .onUploadComplete(async ({ metadata, file }) => {
+    .onUploadComplete(async ({ metadata, file }: any) => {
       try {
         console.log("✅ Upload Callback Triggered");
         console.log("Metadata:", metadata);
