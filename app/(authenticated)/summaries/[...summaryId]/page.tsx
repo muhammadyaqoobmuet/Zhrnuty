@@ -11,13 +11,7 @@ import { SummaryViewer } from "@/components/summaries/summary-viewer";
 import { MotionDiv } from "@/components/common/moiton-wrapper";
 // important for [...summaryId] -> we are catching all routes and they come as a string[]
 
-interface PageProps {
-  params: {
-    summaryId: string[];
-  };
-}
-
-const Page: FC<PageProps> = async ({ params }: PageProps) => {
+const Page = async ({ params }: { params: { summaryId: string[] } }) => {
   const firstSegmentWhichIsIdOfWholeUrl = await params.summaryId[0]; // just the first part like "/summary/this-part"
 
   const summary = await getSummariesById(firstSegmentWhichIsIdOfWholeUrl);
