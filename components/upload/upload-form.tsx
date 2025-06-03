@@ -11,7 +11,7 @@ import {
 } from "@/actions/upload-actions";
 import { generateSummaryFromGeminiApi } from "@/lib/gemni";
 import { useRouter } from "next/navigation";
-
+//validation schema
 const fileScheme = z.object({
   file: z
     .instanceof(File, {
@@ -87,8 +87,6 @@ const UploadForm = () => {
       setIsLoading(true);
       const resp: any = await startUpload([file]);
 
-   
-
       if (resp && resp.length > 0) {
         console.log("Upload successful!");
       }
@@ -96,16 +94,30 @@ const UploadForm = () => {
       const response = await genratePdfSummary(resp);
       // get whole text back
 
-      
-
       if (response.data?.summary) {
         let storeResults: any;
         toast("finished reading pdf  ", {
           duration: 2000,
+          description: "converting into short consice format ....",
         });
-        // storing pdf summaries
+        // storing pdf summaries by converting them into short with ai
+        const responseFromAi = await generateSummaryFromGeminiApi(
+          response.data?.summary
+        );
+
+        if (!responseFromAi) {
+          toast.error("something went wrong try again!  ", {
+            duration: 2000,
+            description: "Ai could not convert into short summary try again!",
+          });
+        }
+
+        toast.success("saving summary  ", {
+          duration: 2000,
+          description: "saving the summary....",
+        });
         storeResults = await storePdfSummaryAction({
-          summary: response.data?.summary as string,
+          summary: responseFromAi as string,
           fileUrl: resp[0].serverData.fileUrl,
           title: response.data.title,
           fileName: file.name,
@@ -129,23 +141,6 @@ const UploadForm = () => {
         toast.error("unable to reading pdf", { duration: 2000 });
         return;
       }
-
-      setResp("genrated summary move to ai now in code");
-
-      // const responseFromAi = await generateSummaryFromGeminiApi(
-      //   response.data?.summary
-      // );
-      // toast.success("saving pdf ", {
-      //   duration: 2000,
-      // });
-      // setResp(responseFromAi);
-      // // we get this shit
-      // console.log("response from ai", responseFromAi);
-      // if (!responseFromAi) {
-      //   toast.error("unable to saving pdf ", {
-      //     duration: 2000,
-      //   });
-      // }
 
       setIsLoading(false);
     } catch (error) {
