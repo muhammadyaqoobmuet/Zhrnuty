@@ -5,11 +5,7 @@ import { z } from "zod";
 import { useUploadThing } from "@/utils/uploadthing";
 import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
-import {
- 
-  processUploadedPdf,
- 
-} from "@/actions/upload-actions";
+import { processUploadedPdf } from "@/actions/upload-actions";
 
 import { useRouter } from "next/navigation";
 //validation schema
@@ -19,9 +15,14 @@ const fileScheme = z.object({
     .refine((file) => file.size <= 8 * 1024 * 1024, {
       message: "File must be smaller than 8MB",
     })
-    .refine((file) => file.type === "application/pdf", {
-      message: "Only PDF files are allowed",
-    }),
+    .refine(
+      (file) =>
+        file.type === "application/pdf" ||
+        file.name.toLowerCase().endsWith(".pdf"),
+      {
+        message: "Only PDF files are allowed",
+      }
+    ),
 });
 
 const UploadForm = () => {
@@ -31,7 +32,7 @@ const UploadForm = () => {
 
   const { startUpload } = useUploadThing("pdfUploader", {
     onClientUploadComplete: (res) => {
-      console.log("File uploaded successfully!", res);
+     
       setUploadProgress(100);
       toast.success("File uploaded! Processing summary...", {
         duration: 3000,
@@ -64,6 +65,8 @@ const UploadForm = () => {
       const formData = new FormData(event.currentTarget as HTMLFormElement);
       const file = formData.get("file") as File;
 
+      
+
       // validate the file type
       const validationResult = fileScheme.safeParse({ file });
       if (!validationResult.success) {
@@ -74,6 +77,7 @@ const UploadForm = () => {
         return;
       }
 
+      
       // start upload && SET: IS LOADING TRUE
       setIsLoading(true);
       try {
@@ -98,8 +102,6 @@ const UploadForm = () => {
         });
 
         router.push(`/summaries/${result.data?.id}`);
-
-       
       } catch (error) {
         console.error("Upload failed:", error);
         setIsLoading(false);

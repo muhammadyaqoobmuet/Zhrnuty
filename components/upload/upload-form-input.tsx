@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, File, X, CheckCircle2 } from "lucide-react";
 
@@ -14,6 +14,45 @@ const UploadFormInput: React.FC<UploadFormInputProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Prevent drag-drop default page reload
+  useEffect(() => {
+    const preventDefaults = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+      window.addEventListener(eventName, preventDefaults, false);
+    });
+
+    return () => {
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        window.removeEventListener(eventName, preventDefaults, false);
+      });
+    };
+  }, []);
+
+  // Helper function to set file to both state and input
+  const setFileToInput = (file: File) => {
+    setSelectedFile(file);
+
+    // Create a new FileList with the dropped file
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+
+    // Set the files to the input element
+    if (fileInputRef.current) {
+      fileInputRef.current.files = dataTransfer.files;
+    }
+  };
+
+  const validatePdfFile = (file: File): boolean => {
+    const fileName = file.name.toLowerCase();
+    const hasPdfExtension = fileName.endsWith(".pdf");
+    const hasPdfMimeType = file.type === "application/pdf";
+    return hasPdfExtension || hasPdfMimeType;
+  };
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -32,15 +71,43 @@ const UploadFormInput: React.FC<UploadFormInputProps> = ({
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
-      if (file.type === "application/pdf") {
-        setSelectedFile(file);
+
+     
+
+      const isValidPdf = validatePdfFile(file);
+
+     
+
+      if (isValidPdf) {
+        if (file.size > 8 * 1024 * 1024) {
+          alert("File must be smaller than 8MB");
+          return;
+        }
+
+        console.log("✅ File accepted - setting to input!");
+        setFileToInput(file);
+      } else {
+        console.log("❌ File rejected!");
+        alert("Only PDF files are allowed.");
       }
+
+     
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
+      const file = e.target.files[0];
+
+      if (validatePdfFile(file)) {
+        if (file.size > 8 * 1024 * 1024) {
+          alert("File must be smaller than 8MB");
+          return;
+        }
+        setSelectedFile(file);
+      } else {
+        alert("Only PDF files are allowed.");
+      }
     }
   };
 
@@ -48,11 +115,18 @@ const UploadFormInput: React.FC<UploadFormInputProps> = ({
     setSelectedFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
+      fileInputRef.current.files = null;
     }
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Debug: Check what's in the form data before submitting
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const formFile = formData.get("file") as File;
+
+    
     if (selectedFile) {
       onSubmit(e);
     }
@@ -63,8 +137,7 @@ const UploadFormInput: React.FC<UploadFormInputProps> = ({
       <form onSubmit={handleFormSubmit} className="space-y-4">
         {/* Upload Area */}
         <div
-          className={`
-            relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ease-in-out
+          className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ease-in-out
             ${
               dragActive
                 ? "border-blue-500 bg-blue-50/50 scale-[1.02]"
