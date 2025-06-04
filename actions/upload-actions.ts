@@ -2,13 +2,90 @@
 
 import { getDbConnection } from "@/lib/db";
 import { fetchAndExtractPdfText } from "@/lib/langchain";
+import { SUMMARY_GOD_MODE_PROMPT } from "@/lib/promt";
 import { formatFileNameAsTitle } from "@/utils/format-utils";
 import { auth } from "@clerk/nextjs/server";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { revalidatePath } from "next/cache";
 import { File } from "node:buffer";
 
-// Create a consistent UUID from Clerk user ID
 
+// Cache auth result to avoid repeated calls
+let cachedAuth: { userId: string | null; timestamp: number } | null = null;
+const AUTH_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+async function getCachedAuth() {
+  const now = Date.now();
+  
+  if (cachedAuth && (now - cachedAuth.timestamp) < AUTH_CACHE_DURATION) {
+    return cachedAuth.userId;
+  }
+  
+  try {
+    const { userId } = await auth();
+    cachedAuth = { userId, timestamp: now };
+    return userId;
+  } catch (error) {
+    console.error("Auth error:", error);
+    return null;
+  }
+}
+
+
+// Optimized AI summary generation with retry and timeout
+async function generateAISummary(pdfText: string, retries = 2): Promise<string> {
+  const apiKey = process.env.NEXT_GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("AI service not configured");
+  }
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.0-flash",
+    systemInstruction: {
+      role: "system",
+      parts: [{ text: SUMMARY_GOD_MODE_PROMPT }],
+    },
+  });
+
+  // Chunk large text to avoid API limits
+  const maxChunkSize = 30000; // Adjust based on Gemini limits
+  const chunks = pdfText.length > maxChunkSize 
+    ? [pdfText.substring(0, maxChunkSize) + "..."] 
+    : [pdfText];
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const result = await Promise.race([
+        model.generateContent({
+          contents: [{
+            role: "user",
+            parts: [{
+              text: `Transform this content into a concise, engaging summary with emojis and markdown formatting:\n\n${chunks[0]}`,
+            }],
+          }],
+        }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error("AI request timeout")), 30000)
+        ),
+      ]) as any;
+
+      return result.response.text();
+    } catch (error) {
+      if (attempt === retries) {
+        throw new Error(`AI generation failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+      }
+      // Wait before retry
+      await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+    }
+  }
+  
+  throw new Error("AI generation failed after retries");
+}
+
+
+
+// Create a consistent UUID from Clerk user ID
 export async function genratePdfSummary(
   uploadResponse: [
     {
@@ -77,7 +154,7 @@ export async function savePdfSummary({
 }) {
   // sql statment for inserting and storing
   try {
-    console.log(userId, fileUrl, summary, title, fileName);
+
 
     const sql = await getDbConnection();
     const results = await sql`INSERT INTO pdf_summaries(
@@ -101,6 +178,103 @@ export async function savePdfSummary({
     console.error("error saving pdf summary", error);
   }
 }
+
+// Single optimized action that handles everything
+export async function processUploadedPdf({
+  uploadData,
+  fileName,
+}: {
+  uploadData: {
+    userId: string;
+    fileUrl: string;
+    fileName: string;
+  };
+  fileName: string;
+}) {
+  try {
+    // Get user ID from cache
+    const userId = await getCachedAuth();
+    if (!userId) {
+      return {
+        success: false,
+        message: "Authentication required",
+        data: null,
+      };
+    }
+
+    const { fileUrl } = uploadData;
+    if (!fileUrl) {
+      return {
+        success: false,
+        message: "Invalid file URL",
+        data: null,
+      };
+    }
+
+    // Process PDF text extraction and AI summary in parallel where possible
+    const formattedTitle = formatFileNameAsTitle(fileName);
+    
+    // Extract PDF text
+    const pdfText = await fetchAndExtractPdfText(fileUrl);
+    if (!pdfText || pdfText.length < 10) {
+      return {
+        success: false,
+        message: "Could not extract text from PDF",
+        data: null,
+      };
+    }
+
+    // Generate AI summary
+    const aiSummary = await generateAISummary(pdfText);
+    if (!aiSummary) {
+      return {
+        success: false,
+        message: "Could not generate summary",
+        data: null,
+      };
+    }
+
+    // Save to database
+    const savedSummary = await savePdfSummary({
+      userId,
+      fileUrl,
+      summary: aiSummary,
+      title: formattedTitle,
+      fileName,
+    });
+
+    if (!savedSummary) {
+      return {
+        success: false,
+        message: "Failed to save summary",
+        data: null,
+      };
+    }
+
+    // Revalidate path for fresh data
+    revalidatePath(`/summaries/${savedSummary.id}`);
+
+    return {
+      success: true,
+      message: "PDF processed successfully",
+      data: {
+        id: savedSummary.id,
+        title: formattedTitle,
+        summary: aiSummary,
+      },
+    };
+
+  } catch (error) {
+    console.error("PDF processing error:", error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Processing failed",
+      data: null,
+    };
+  }
+}
+
+
 
 export async function storePdfSummaryAction({
   fileUrl,
