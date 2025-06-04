@@ -1,7 +1,7 @@
 import BgGradient from "@/components/common/bg-gradient";
 import UploadForm from "@/components/upload/upload-form";
 import UploadHeader from "@/components/upload/upload-header";
-import { Heart, Sparkles } from "lucide-react";
+
 import React from "react";
 
 const Page = () => {

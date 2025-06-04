@@ -80,7 +80,7 @@ const SectionTitle = ({ title }: { title: string }) => {
 };
 
 export function SummaryViewer({ summary }: { summary: string }) {
-  console.log("summary brother" + summary);
+ ;
   // creating handlers
 
   const handleNext = () =>
@@ -102,7 +102,7 @@ export function SummaryViewer({ summary }: { summary: string }) {
     .filter(Boolean) // Remove any empty strings resulting from the split
     .map(parseSection); // Parse each section into { title, content }
 
-  console.log(sections);
+  
   return (
     <Card className="relative px-2 h-[500px] sm:h-[600px] lg:h-[700px] w-full xl:w-[600px] overflow-hidden bg-linear-to-br from-background via-background/95 to-rose-500/5 backdrop-blur-lg shadow-2xl rounded-3xl border border-rose-500/10">
       <ProgressBar sections={sections} currentSection={currentSection} />

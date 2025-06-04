@@ -171,7 +171,7 @@ export async function savePdfSummary({
       ${fileName}
     )  RETURNING id, user_id, original_file_url, summary_text, title, file_name, created_at;`;
 
-    console.log("results" + results[0]);
+    
 
     return results[0];
   } catch (error) {
@@ -291,7 +291,7 @@ export async function storePdfSummaryAction({
   //  savePdfSummary
   // savePdfSummary()
 
-  console.log("checkingTpye storePdf" + fileUrl, summary, title, fileName);
+  
   let savedPdfSummary: any;
 
   try {
@@ -312,7 +312,7 @@ export async function storePdfSummaryAction({
       fileName,
     });
 
-    console.log("savedPdfSummaryResutl " + savedPdfSummary);
+   
 
     if (!savedPdfSummary) {
       return {

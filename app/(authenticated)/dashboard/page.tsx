@@ -19,7 +19,7 @@ const page = async () => {
   }
 
   const summaries = await getSummaries(user.id);
-  console.log(summaries);
+  
   return (
     <main className="min-h-screen">
       <BgGradient className="bg-gradient-to-br from-emerald-700 via-teal-400  to-cyan-700 animate-gradient-x" />

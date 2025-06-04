@@ -23,7 +23,7 @@ export async function deleteSummaryAction({
               WHERE id = ${summaryId}
               AND user_id = ${user?.id}
               RETURNING id; `;
-    console.log(results);
+    
     if (results.length > 0) {
       revalidatePath("/dashboard");
       return {
