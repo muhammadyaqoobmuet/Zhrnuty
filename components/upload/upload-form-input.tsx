@@ -69,8 +69,8 @@ const UploadFormInput: React.FC<UploadFormInputProps> = ({
               dragActive
                 ? "border-blue-500 bg-blue-50/50 scale-[1.02]"
                 : selectedFile
-                ? "border-green-500 bg-green-50/50"
-                : "border-gray-300 hover:border-gray-400 hover:bg-gray-50/50"
+                  ? "border-green-500 bg-green-50/50"
+                  : "border-gray-300 hover:border-gray-400 hover:bg-gray-50/50"
             }
             ${isLoading ? "pointer-events-none opacity-60" : "cursor-pointer"}
           `}
@@ -146,7 +146,7 @@ const UploadFormInput: React.FC<UploadFormInputProps> = ({
                     <span className="font-medium text-blue-600">browse</span>
                   </p>
                   <p className="text-xs text-gray-500">
-                    PDF files only • Max 10MB
+                    PDF files only • Max 8MB
                   </p>
                 </div>
               </div>
@@ -168,7 +168,7 @@ const UploadFormInput: React.FC<UploadFormInputProps> = ({
           ) : (
             <div className="flex items-center space-x-2">
               <File className="w-4 h-4" />
-              <span>Analyze PDF</span>
+              <span>Analyze PDF ✨</span>
             </div>
           )}
         </Button>
